@@ -1,11 +1,11 @@
 # File: pyoiler_logging/__init__.py
 #  /coding: utf-8
 #  vim:tw=0:ts=4:sw=4:et
-# Last Modified: 2016.11.19
+# Last Modified: 2017.08.02
 # Author: Landon Bouma (landonb &#x40; retrosoft &#x2E; com)
 # Project: https://github.com/landonb/pyoiler-logging
 # Summary: Python logging wrapper.
-# Copyright: © 2008, 2015-2016 Landon Bouma.
+# Copyright: © 2008, 2015-2017 Landon Bouma.
 # License: GPLv3. See LICENSE.txt.
 # -------------------------------------------------------------------
 # Summary: Wrap Python logging facility:
@@ -363,8 +363,8 @@ class My_Logger(logging.Logger):
 
 class My_StreamHandler(logging.StreamHandler):
 
-    def __init__(self):
-        logging.StreamHandler.__init__(self)
+    def __init__(self, stream=None):
+        logging.StreamHandler.__init__(self, stream)
 
     def format(self, record):
         return My_Handler.format(self, record)
@@ -522,6 +522,7 @@ def init_logging(
     log_dfmat=None,
     log_to_file=False,
     log_to_console=False,
+    log_to_stderr=False,
     log_to_wx=False,
     log_frmat_len=0,
     #log_frmat_postfix='#',
@@ -539,7 +540,8 @@ def init_logging(
             log_frmat,
             log_dfmat,
             log_to_file,
-            log_to_console, 
+            log_to_console,
+            log_to_stderr,
             log_to_wx,
             log_frmat_len,
             log_frmat_postfix,
@@ -557,7 +559,8 @@ def init_logging_impl(
     log_frmat,
     log_dfmat,
     log_to_file,
-    log_to_console, 
+    log_to_console,
+    log_to_stderr,
     log_to_wx,
     log_frmat_len,
     log_frmat_postfix,
@@ -663,6 +666,7 @@ def init_logging_impl(
     if (True
         and not log_to_file
         and not log_to_console
+        and not log_to_stderr
         and not log_to_wx
     ):
       log_to_console = True
@@ -671,6 +675,11 @@ def init_logging_impl(
         logging_handlers.append(My_FileHandler(log_fname))
     if log_to_console:
         logging_handlers.append(My_StreamHandler())
+    #if log_to_stdout:
+    #    # Should be same as not specifying stream.
+    #    logging_handlers.append(My_StreamHandler(sys.stdout))
+    if log_to_stderr:
+        logging_handlers.append(My_StreamHandler(sys.stderr))
     if log_to_wx:
         logging_handlers.append(My_wxPythonHandler())
     for handler in logging_handlers:
